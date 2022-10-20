@@ -4,7 +4,7 @@ import csv
 from d2lib.files import SSSFile
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """Get absolute path to resource, works for dev and for PyInstaller"""
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
@@ -18,12 +18,23 @@ with open(item_lib_path, 'r') as file:
         items.append(item)
 
 def get_item_column(column, items):
+    """
+    param column = name of the column
+    param items = list of dictionaries
+    returns a list with the column values
+    """
     item_values = []
     for item in items:
         item_values.append(item[column])
     return item_values
 
 def get_items_by_value(column, value, items):
+    """
+    param column = name of the column
+    param value = if value == value in column then adds the item to item_by_value
+    param items = list of dictionaries
+    returns a list of dictionaries of the selected column and value
+    """
     item_by_value = []
     for item in items:
         if item[column] == value:
@@ -34,53 +45,79 @@ def is_rune(item_name):
     return item_name.endswith('Rune')
 
 def get_normal_grail_func():
+    """
+    returns all the items - runes
+    """
     normal_grail = []
     for item in items:
         if item['Item Group 0'] != 'Runes':
             normal_grail.append(item)
     return normal_grail
 
-get_not_found_items = get_items_by_value('Found', 'False', items)
-get_not_found_item_names = get_item_column('Item', get_not_found_items)
-get_normal_grail = get_normal_grail_func()
-get_normal_grail_names = get_item_column('Item', get_normal_grail)
-get_found_items = get_items_by_value('Found', 'True', get_normal_grail)
-get_found_item_names = get_item_column('Item', get_found_items)
-get_runes_grail = get_items_by_value('Item Group 0', 'Runes', items)
-get_runes_grail_names = get_item_column('Item', get_runes_grail)
-get_found_runes = get_items_by_value('Found', 'True', get_runes_grail)
-get_found_rune_names = get_item_column('Item', get_found_runes)
-get_normal_grail_completed_perc = round((len(get_found_item_names) / len(get_normal_grail_names)) * 100)
-get_runes_grail_completed_perc = round((len(get_found_rune_names) / len(get_runes_grail_names)) * 100)
-get_all_found = get_items_by_value('Found', 'True', items)
-get_all_found_names = get_item_column('Item', get_all_found)
-get_all_sets = get_items_by_value('Item Group 0', 'Sets', items)
-get_all_sets_names = get_item_column('Item Group 1', get_all_sets)
-get_all_sets_names = list(set(get_all_sets_names))
-get_all_sets_names.sort()
-
-def reload():
-    global get_not_found_items, get_not_found_item_names, get_normal_grail, get_normal_grail_names, get_found_items, get_found_item_names
-    global get_runes_grail, get_runes_grail_names, get_found_runes, get_found_rune_names, get_normal_grail_completed_perc, get_runes_grail_completed_perc
-    global get_all_found, get_all_found_names, get_all_sets, get_all_sets_names
+def not_found_items():
+    """
+    returns a list of not found item names
+    """
     get_not_found_items = get_items_by_value('Found', 'False', items)
-    get_not_found_item_names = get_item_column('Item', get_not_found_items)
+    return get_item_column('Item', get_not_found_items)
+
+def normal_grail():
+    """
+    returns a list of item names - runes
+    """
     get_normal_grail = get_normal_grail_func()
-    get_normal_grail_names = get_item_column('Item', get_normal_grail)
-    get_found_items = get_items_by_value('Found', 'True', get_normal_grail)
-    get_found_item_names = get_item_column('Item', get_found_items)
+    return get_item_column('Item', get_normal_grail)
+
+def found_items():
+    """
+    returns a list of found item names
+    """
+    get_found_items = get_items_by_value('Found', 'True', get_normal_grail_func())
+    return get_item_column('Item', get_found_items)
+
+def runes_grail():
+    """
+    returns a list of runes
+    """
     get_runes_grail = get_items_by_value('Item Group 0', 'Runes', items)
-    get_runes_grail_names = get_item_column('Item', get_runes_grail)
+    return get_item_column('Item', get_runes_grail)
+
+def found_runes():
+    """
+    returns a list of found runes
+    """
+    get_runes_grail = get_items_by_value('Item Group 0', 'Runes', items)
     get_found_runes = get_items_by_value('Found', 'True', get_runes_grail)
-    get_found_rune_names = get_item_column('Item', get_found_runes)
-    get_normal_grail_completed_perc = round((len(get_found_item_names) / len(get_normal_grail_names)) * 100)
-    get_runes_grail_completed_perc = round((len(get_found_rune_names) / len(get_runes_grail_names)) * 100)
+    return get_item_column('Item', get_found_runes)
+    
+def normmal_grail_completed_perc():
+    """
+    returns an int representing the % of items found
+    """
+    return round((len(found_items()) / len(normal_grail())) * 100)
+
+def runes_grail_completed_perc():
+    """
+    returns an int representing the % of runes found
+    """
+    return round((len(found_runes()) / len(runes_grail())) * 100)
+
+def all_found():
+    """
+    returns a list of names with all the found items
+    """
     get_all_found = get_items_by_value('Found', 'True', items)
-    get_all_found_names = get_item_column('Item', get_all_found)
+    return get_item_column('Item', get_all_found)
+
+def all_sets():
+    """
+    returns a list of names with all the sets
+    """
     get_all_sets = get_items_by_value('Item Group 0', 'Sets', items)
     get_all_sets_names = get_item_column('Item Group 1', get_all_sets)
     get_all_sets_names = list(set(get_all_sets_names))
     get_all_sets_names.sort()
+    return get_all_sets_names
 
 def save_file(items):
     with open(item_lib_path, 'w', encoding='utf8', newline='') as file:
@@ -98,6 +135,9 @@ def update_item_found_status(item_name, status):
     items = updated_items
 
 def update_hg_from_sss(file_path):
+    """
+    parses the PlugY stash and updates the items list of dictionaries
+    """
     sss_file = SSSFile(file_path)
     for page in sss_file.stash:
         for item in page['items']:
