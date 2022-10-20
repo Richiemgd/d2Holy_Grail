@@ -1,5 +1,4 @@
 # d2Holy Grail
-
 Holy Grail tracker for d2
 
 ![image](https://user-images.githubusercontent.com/59810366/196965798-5c1e3fec-b0bc-4434-bf49-65139d3d81b6.png)
