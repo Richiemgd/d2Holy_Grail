@@ -8,8 +8,9 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-item_lib_path = resource_path('data\Item_library.csv')
+item_lib_path = resource_path('data\itemlib.csv')
 
+#List of dictionaries
 items = []
 
 with open(item_lib_path, 'r') as file:
